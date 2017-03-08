@@ -5,83 +5,117 @@
 
 (function () { // Beginning of the IIFE
 
-  let navbar2= document.getElementById("navbar2");
-    let navbarHTMl;
+// App entry point
+function Start() {
+  LoadNavBar();
+  LoadPageContent();
+}
 
-    let navXHR =new XMLHttpRequest();
+// Loads the Main Navigation using AJAX
+function LoadNavBar() {
+  let mainNav = document.getElementById("mainNav");
+    let navbarHTML;
 
-    navXHR.open("GET","../navbar.html", true);
+    // STEP 1 - need an XHR object
+    let navXHR = new XMLHttpRequest();
 
+    // STEP 2 - open a file
+    navXHR.open("GET", "../navbar.html", true);
+
+    // STEP 3 - send the XMLHttpRequest
     navXHR.send();
 
-    navXHR.onreadystatechange = function(){
-if ((this.readyState === 4) && (this.status === 200)){
-    navbarHTMl = this.response
-}
-    };
-
-    navXHR.addEventListener("load",function(){
-      navbar2.innerHTML=navbarHTMl;
-
-    switch(document.title){
-      case"Home":
-      let homeLink = document.getElementById("homeLink");
-      homeLink.setAttribute("class","active");
-    break;
-
-          case"Projects":
-      let projectsLink = document.getElementById("projectsLink");
-      projectsLink.setAttribute("class","active");
-    break;
-
-          case"Contact":
-      let contactLink = document.getElementById("contactLink");
-      contactLink.setAttribute("class","active");
-    break;
-    }
-  });
-
-
-  switch (document.title) {
-    case "Home":
-   
-     let data;
-    //step 1 declare xhr element
-    let XHR = new XMLHttpRequest();
-    // step2 open the file
-    XHR.open("GET","../games.json", true);
-    //step 3 send out a call to XHR object
-    XHR.send();
-    // step4 listen to ready stake
-    XHR.onreadystatechange =  function(){
+    // STEP 4 - listen for readystate of 4 and server status of 200 onReadyStateChange
+    navXHR.onreadystatechange = function() {
       if((this.readyState === 4) && (this.status === 200)) {
-        data= JSON.parse(this.responseText);
-
+        // read the data
+        navbarHTML = this.responseText;
       }
     };
-    XHR.addEventListener("load",function(){
-      let gameListBody = document.getElementById("gameListBody");
 
-      // for each game in data.games repeat
-      data.games.forEach(function(game) {
-        // inject a "template row" inside the dataRows div tag
-        let newRow = document.createElement("tr");
+    // STEP 5 - wait until the Navbar file has finished loading
+   navXHR.addEventListener("load", function() {
+      mainNav.innerHTML = navbarHTML;
+      switch(document.title) {
+        case "Home":
+          let homeLink = document.getElementById("homeLink");
+          homeLink.setAttribute("class", "active");
+        break;
 
-        newRow.innerHTML = `
+        case "Projects":
+          let projectsLink = document.getElementById("projectsLink");
+          projectsLink.setAttribute("class", "active");
+        break;
+
+        case "Contact":
+          let contactLink = document.getElementById("contactLink");
+          contactLink.setAttribute("class", "active");
+        break;
+      }
+    });
+}
+
+
+// Loads the Content for each page using the Document Title
+function LoadPageContent() {
+  switch (document.title) {
+    case "Home":
+      LoadHomePage();
+      break;
+
+    case "Projects":
+      LoadProjectsPage();
+      break;
+
+    case "Contact":
+      LoadContactPage();
+      break;
+  }
+}
+
+// Loads the content of the Home Page
+function LoadHomePage() {
+  let data = {};
+
+      // STEP 1 - instantiate an XHR object
+      let XHR = new XMLHttpRequest();
+
+      // STEP 2 - open the JSON file
+      XHR.open("GET", "../games.json", true);
+
+      // STEP 3 - send out a call to the XHR object
+      XHR.send();
+
+      // STEP 4 - listen for readystate to be 4
+      XHR.onreadystatechange = function () {
+        if ((this.readyState === 4) && (this.status === 200)) {
+          // convert data from string to JSON format
+          data = JSON.parse(this.responseText);
+        }
+      };
+
+      // STEP 5 - wait until data is finished loading before injecting it
+      XHR.addEventListener("load", function () {
+        let gameListBody = document.getElementById("gameListBody");
+
+        // for each game in data.games repeat
+        data.games.forEach(function (game) {
+          // inject a "template row" inside the dataRows div tag
+          let newRow = document.createElement("tr");
+          newRow.innerHTML = `
           <td>${game.name}</td>
           <td class="text-center">${game.cost}</td>
           <td class="text-center">${game.rating}</td>
         `;
+          gameListBody.appendChild(newRow);
+        }, this);
 
-        gameListBody.appendChild(newRow);
+      });
+}
 
-      }, this);
-    });
-      break;
-
-    case "Projects":
-
-      // Step 1 - Setup references to the elements you need to hook into
+// Loads the content for the projects page
+function LoadProjectsPage() {
+  // Step 1 - Setup references to the elements you need to hook into
       let HideButton = document.getElementById("HideButton");
       let HalfSizeButton = document.getElementById("HalfSizeButton");
       let ThreeQuarterSizeButton = document.getElementById("ThreeQuarterSizeButton");
@@ -91,45 +125,45 @@ if ((this.readyState === 4) && (this.status === 200)){
       let ButtonArray = [HideButton, HalfSizeButton, ThreeQuarterSizeButton, ShowButton];
 
       // loop through the array of butttons
-      ButtonArray.forEach(function(button) {
+      ButtonArray.forEach(function (button) {
         // set an event listener for each button
         button.addEventListener("click", ButtonClick);
       }, this);
 
       // Use one named function, ButtonClick to respond to each of the buttons
-      function ButtonClick(event){
-          // store which button has been clicked in currentButton
-          //let currentButton = event.currentTarget; <- one way of getting a ref to the button
-          let currentButton = event.currentTarget;
-          switch(currentButton.getAttribute("id")) {
-            case "HideButton":
-              FirstProjectImage.style.display = "none";
+      function ButtonClick(event) {
+        // store which button has been clicked in currentButton
+        //let currentButton = event.currentTarget; <- one way of getting a ref to the button
+        let currentButton = event.currentTarget;
+        switch (currentButton.getAttribute("id")) {
+          case "HideButton":
+            FirstProjectImage.style.display = "none";
             break;
-            case "HalfSizeButton":
-              FirstProjectImage.style.maxWidth = "50%";
-              FirstProjectImage.style.display = "block";
+          case "HalfSizeButton":
+            FirstProjectImage.style.maxWidth = "50%";
+            FirstProjectImage.style.display = "block";
             break;
-            case "ThreeQuarterSizeButton":
-              FirstProjectImage.style.maxWidth = "75%";
-              FirstProjectImage.style.display = "block";
+          case "ThreeQuarterSizeButton":
+            FirstProjectImage.style.maxWidth = "75%";
+            FirstProjectImage.style.display = "block";
             break;
-            case "ShowButton":
-              FirstProjectImage.style.display = "block";
-              FirstProjectImage.style.maxWidth = "100%";
+          case "ShowButton":
+            FirstProjectImage.style.display = "block";
+            FirstProjectImage.style.maxWidth = "100%";
             break;
-          }
         }
+      }
+}
 
-      break;
-
-    case "Contact":
-      let FullName = document.getElementById("FullName");
+// Loads the Content for the Contact Page
+function LoadContactPage() {
+  let FullName = document.getElementById("FullName");
       let ContactNumber = document.getElementById("ContactNumber");
       let Email = document.getElementById("Email");
       let Message = document.getElementById("Message");
       let SendButton = document.getElementById("SendButton");
 
-      SendButton.addEventListener("click", function(event){
+      SendButton.addEventListener("click", function (event) {
         event.preventDefault();
 
         console.log(FullName);
@@ -138,10 +172,11 @@ if ((this.readyState === 4) && (this.status === 200)){
         console.log(Message);
 
       });
+}
 
-      break;
-  }
 
-  let myVariable = 500;
+  // call the Start function when the window loads
+  window.onload = Start; // Start is the callback function / event handler
 
 })(); // end of the IIFE
+
