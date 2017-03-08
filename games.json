@@ -1,0 +1,20 @@
+{
+    "games":
+    [
+    {
+    "name": "FAllout 4",
+    "cost": 69.99,
+    "rating":4.3
+},
+{
+    "name":"OverWatch",
+    "cost":49.99,
+    "rating":4.1
+},
+{
+    "name":"IGI",
+    "cost":199.99,
+    "rating":4.9
+}
+    ]
+}
